@@ -12,6 +12,10 @@
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    sans-serif;
             }
 
             .topbar {
@@ -108,48 +112,5 @@
                 </div>
             </div>
         </div>
-
-        <script>
-            // function initResize(resizer, leftSection) {
-            //     let x = 0;
-            //     let leftWidth = 0;
-
-            //     function mouseDownHandler(e) {
-            //         x = e.clientX;
-            //         leftWidth = leftSection.getBoundingClientRect().width;
-
-            //         document.addEventListener("mousemove", mouseMoveHandler);
-            //         document.addEventListener("mouseup", mouseUpHandler);
-            //     }
-
-            //     function mouseMoveHandler(e) {
-            //         const dx = e.clientX - x;
-            //         const newWidth = leftWidth + dx;
-            //         leftSection.style.width = `${newWidth}px`;
-            //         resizer.style.left = `${e.clientX}px`;
-            //     }
-
-            //     function mouseUpHandler() {
-            //         document.removeEventListener("mousemove", mouseMoveHandler);
-            //         document.removeEventListener("mouseup", mouseUpHandler);
-            //     }
-
-            //     resizer.addEventListener("mousedown", mouseDownHandler);
-            // }
-
-            // // Initialize resizers
-            // const leftResizer = document.getElementById("leftResizer");
-            // const rightResizer = document.getElementById("rightResizer");
-            // const leftSection = document.querySelector(".left-section");
-            // const middleSection = document.querySelector(".middle-section");
-
-            // // Position resizers
-            // leftResizer.style.left = "20%";
-            // rightResizer.style.left = "50%";
-
-            // // Initialize both resizers
-            // initResize(leftResizer, leftSection);
-            // initResize(rightResizer, middleSection);
-        </script>
     </body>
 </html>
