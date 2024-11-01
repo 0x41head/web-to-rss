@@ -3,153 +3,28 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <script type="text/javascript" src="./js/index.js"></script>
         <title>Resizable Three Column Layout</title>
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-                background-color: #faf9f6;
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .topbar {
-                background-color: #333;
-                color: white;
-                padding: 1rem;
-                height: 40px;
-                display: flex;
-                align-items: center;
-            }
-
-            .container {
-                display: flex;
-                flex: 1;
-                min-height: 0;
-                position: relative;
-            }
-
-            .section {
-                padding: 20px;
-                box-sizing: border-box;
-                border: 1px solid #ccc;
-                overflow: auto;
-                height: 100%;
-            }
-
-            .left-section {
-                width: 20%;
-                background-color: rgba(0, 0, 0, 0.05);
-                min-width: 100px;
-                resize: horizontal;
-            }
-
-            .middle-section {
-                width: 30%;
-                background-color: rgba(0, 0, 0, 0.02);
-                min-width: 100px;
-                resize: horizontal;
-            }
-
-            .right-section {
-                flex: 1;
-                background-color: rgba(0, 0, 0, 0.05);
-                min-width: 100px;
-            }
-
-            .resizer {
-                width: 8px;
-                background-color: #ddd;
-                cursor: col-resize;
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                z-index: 100;
-            }
-
-            .resizer:hover {
-                background-color: #999;
-            }
-
-            /* Add some content to make scrolling visible */
-            .content {
-                height: 1000px;
-            }
-        </style>
     </head>
     <body>
         <div class="topbar">
             <h1>Resizable Layout</h1>
-            <button><a href="./subscribe.html">Subscribe</a></button>
         </div>
         <div class="container">
-            <div class="section left-section">
-                <h2>20% Width Section</h2>
-                <p>Drag the gray bar to resize sections.</p>
-                <div class="content">
-                    <p>Scroll content...</p>
-                </div>
+            <div id="feed-author" class="section left-section">
+                <h2>
+                    Feeds
+                    <div class="btn-group">
+                        <button>Referesh</button>
+                        <button><a href="./subscribe.html">Add</a></button>
+                    </div>
+                </h2>
             </div>
-            <div class="resizer" id="leftResizer"></div>
-            <div class="section middle-section">
-                <h2>30% Width Section</h2>
-                <p>Drag the gray bar to resize sections.</p>
-                <div class="content">
-                    <p>Scroll content...</p>
-                </div>
-            </div>
-            <div class="resizer" id="rightResizer"></div>
-            <div class="section right-section">
-                <h2>Remaining Width Section</h2>
-                <p>This section takes up the remaining space.</p>
-                <div class="content">
-                    <p>Scroll content...</p>
-                </div>
-            </div>
+            <!-- <div class="resizer" id="leftResizer"></div> -->
+            <div id="feed-titles" class="section middle-section"></div>
+            <!-- <div class="resizer" id="rightResizer"></div> -->
+            <div id="feed-content" class="section right-section"></div>
         </div>
-
-        <script>
-            // function initResize(resizer, leftSection) {
-            //     let x = 0;
-            //     let leftWidth = 0;
-
-            //     function mouseDownHandler(e) {
-            //         x = e.clientX;
-            //         leftWidth = leftSection.getBoundingClientRect().width;
-
-            //         document.addEventListener("mousemove", mouseMoveHandler);
-            //         document.addEventListener("mouseup", mouseUpHandler);
-            //     }
-
-            //     function mouseMoveHandler(e) {
-            //         const dx = e.clientX - x;
-            //         const newWidth = leftWidth + dx;
-            //         leftSection.style.width = `${newWidth}px`;
-            //         resizer.style.left = `${e.clientX}px`;
-            //     }
-
-            //     function mouseUpHandler() {
-            //         document.removeEventListener("mousemove", mouseMoveHandler);
-            //         document.removeEventListener("mouseup", mouseUpHandler);
-            //     }
-
-            //     resizer.addEventListener("mousedown", mouseDownHandler);
-            // }
-
-            // // Initialize resizers
-            // const leftResizer = document.getElementById("leftResizer");
-            // const rightResizer = document.getElementById("rightResizer");
-            // const leftSection = document.querySelector(".left-section");
-            // const middleSection = document.querySelector(".middle-section");
-
-            // // Position resizers
-            // leftResizer.style.left = "20%";
-            // rightResizer.style.left = "50%";
-
-            // // Initialize both resizers
-            // initResize(leftResizer, leftSection);
-            // initResize(rightResizer, middleSection);
-        </script>
     </body>
 </html>

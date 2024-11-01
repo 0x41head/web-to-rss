@@ -1,0 +1,143 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #faf9f6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    max-height: 100vh;
+    overflow: auto;
+}
+button {
+    background-color: #d98324;
+    color: #faf9f6;
+    padding: 14px 20px;
+    margin: 16px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button a {
+    color: #faf9f6;
+    text-decoration: none;
+}
+h2 {
+    width: 80%;
+}
+
+.topbar {
+    background-color: #0f0a0a;
+    color: white;
+    padding: 1rem;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.section {
+    padding-: 20px;
+    padding-top: 0px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    overflow: auto;
+    min-height: calc(100% - 40px);
+}
+
+.left-section {
+    width: 20%;
+    background-color: rgba(0, 0, 0, 0.05);
+    min-width: 100px;
+}
+
+.vertical-section {
+    padding: 10px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+.search-bar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.middle-section {
+    width: 30%;
+    background-color: rgba(0, 0, 0, 0.02);
+    min-width: 100px;
+}
+
+.right-section {
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+    min-width: 100px;
+    padding: 20px;
+}
+
+.horizontal-section {
+    flex: 1;
+    display: flex;
+    justify-content: left;
+    align-items: top;
+    font-size: 18px;
+    width: 100%;
+    color: black;
+    flex-direction: column;
+}
+
+.subtitle {
+    font-size: 12px;
+}
+
+.input-field {
+    width: 90%;
+    padding: 12px 20px;
+    margin: 15px 5px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.flex-row {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+}
+
+.feed-item {
+    background-color: #faf9f6;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    margin-bottom: 3px;
+}
+
+.feed-item:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #d98324;
+    color: #faf9f6;
+}
+.display-box {
+    height: 200px;
+    overflow: auto;
+    padding-left: 20px;
+    background-color: rgba(0, 0, 0, 0.05);
+    display: none;
+}
