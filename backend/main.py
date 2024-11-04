@@ -5,6 +5,12 @@ from firebase_admin import firestore, credentials
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import json
+import xml.etree.ElementTree as ET
+import requests
+from bs4 import BeautifulSoup
+import sys
+sys.setrecursionlimit(10000)
+
 
 # Initialization of DB + API Server
 app = FastAPI()
@@ -56,6 +62,45 @@ async def getAllFeeds():
     for doc in docs:
         feedObject=doc.to_dict()
         arrayOfFeedObjects.append(feedObject)
-
-
     return arrayOfFeedObjects
+
+@app.post("/detect_feeds")
+async def detectFeeds(url:str):
+    response={}
+    rssURL = url + "/rss.xml";
+    xmlData = requests.get(rssURL)
+    if xmlData.status_code == 200:
+        root = ET.fromstring(xmlData.content)
+        response['data']={}
+        allFeeds=root.find('channel')
+        # name = root.getElementsByTagName("item")[0]
+        # print(root.findall('item'))
+        feedArr=[]
+        lArr=[]
+        for feed in allFeeds.findall('item'):
+            feedData={}
+            feedData['title']=feed.find('title').text
+            feedData['url']=feed.find('link').text
+            try:
+                feedData['content']=feed.find('description').text
+            except:
+                feedData['content']=findWebsiteContent(feedData['url'])
+                # feedData['content']=None
+            feedData['date']=feed.find('pubDate').text
+            feedData['author']=""
+            feedArr.append(feedData)
+
+        response['data']=feedArr
+
+    # doc = minidom.parse("sample.xml")
+    return response
+
+
+def findWebsiteContent(url):
+
+    headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"}
+
+    r = requests.get(url,headers=headers)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    a=str(soup.find('div',attrs={'class':'post'}))
+    return a

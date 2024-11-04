@@ -4,6 +4,12 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script type="text/javascript" src="./js/main.js"></script>
+        <!-- x-frame-bypass-for-safari -->
+        <script src="https://unpkg.com/@ungap/custom-elements-builtin"></script>
+        <script
+            src="https://spacenerd24.github.io/x-frame-bypass/x-frame-bypass.js"
+            type="module"
+        ></script>
         <link rel="stylesheet" href="style.css" />
         <title>Resizable Three Column Layout</title>
     </head>
@@ -23,8 +29,17 @@
                     />
                     <button onclick="websiteToRSS()">Submit</button>
                 </div>
+                <!-- <div
+                    id="website-preview"
+                    class="horizontal-section"
+                    style="all: revert"
+                ></div> -->
             </div>
-            <div id="right-section" class="vertical-section"></div>
+            <div id="right-section" class="vertical-section">
+                <div id="loader" class="center-div">
+                    <div class="loader"></div>
+                </div>
+            </div>
         </div>
     </body>
 </html>

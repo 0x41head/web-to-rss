@@ -1,13 +1,15 @@
 var arrayOfAllFeeds;
+var isInEditMode = false;
 
 function websiteToRSS() {
+  startLoader();
+  var url = document.getElementById("website").value;
   try {
-    var url = document.getElementById("website").value;
-
     // Create URL object to parse the URL (throws error if invalid)
     const urlObject = new URL(url);
-    addiFrame(url);
-    checkIfRSSForWebsiteExists(url);
+    console.log(urlObject, "urlObject");
+    addiFrame(urlObject.href);
+    checkIfRSSForWebsiteExists(urlObject.origin);
   } catch (error) {
     alert("Enter valid url");
     console.log(error);
@@ -15,24 +17,24 @@ function websiteToRSS() {
 }
 
 function checkIfRSSForWebsiteExists(url) {
-  const corsURL = "https://cors-anywhere.herokuapp.com/" + url + "rss.xml";
-  try {
-    fetch(corsURL)
-      .then((response) => response.text())
-      .then((text) => {
-        try {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(text, "text/xml");
-          const all_items = doc.getElementsByTagName("item");
-          arrayOfAllFeeds = convertHTMLCollectionObjectToJSON(all_items);
-          addTextToPreview(arrayOfAllFeeds);
-        } catch (error) {
-          alert("Something went wrong, try again!");
-        }
-      });
-  } catch (error) {
-    console.log("RSS doesn't exist for the website");
+  if (document.getElementById("feed-preview")) {
+    document.getElementById("feed-preview").remove();
   }
+  fetch(
+    "http://localhost:8000/detect_feeds?" +
+      new URLSearchParams({ url: url }).toString(),
+    {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    },
+  )
+    .then((response) => response.json())
+    .then((feedDataJSON) => {
+      displayFeedToPreview(feedDataJSON["data"]);
+      closeLoader();
+    });
 }
 
 function addiFrame(url) {
@@ -41,10 +43,11 @@ function addiFrame(url) {
   }
   const div = document.getElementById("left-section");
 
-  // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
+  // // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
   div.insertAdjacentHTML(
     "beforeend",
     `<iframe
+      is="x-frame-bypass"
       id="website-preview"
       class="horizontal-section"
       src=${url}
@@ -54,78 +57,60 @@ function addiFrame(url) {
   );
 }
 
-function addTextToPreview(arrayOfJSONObjects) {
-  if (document.getElementById("feed-preview")) {
-    document.getElementById("feed-preview").remove();
-  }
+function displayFeedToPreview(arrayOfJSONObjects) {
   const div = document.getElementById("right-section");
   var newstring = "";
 
-  for (let i = 0; i < 3; i++) {
-    const cleanTitle = cleanString(arrayOfJSONObjects[i]["title"]);
-    newstring += `<li>
-    <div class="feed-item" onclick="showFeedContent(${cleanTitle})">
-    ${arrayOfJSONObjects[i]["title"]}
-    <div class="subtitle">${arrayOfJSONObjects[i]["date"]}</div>
-    </div>
-    <div id=${cleanTitle} class="display-box">${arrayOfJSONObjects[i]["content"]}</div>
-    </li>`;
+  if (arrayOfJSONObjects) {
+    for (let i = 0; i < 3; i++) {
+      const cleanTitle = cleanString(arrayOfJSONObjects[i]["title"]);
+      newstring += `
+      <li>
+        <div class="feed-item" onclick="showFeedContent(${cleanTitle})">
+          ${arrayOfJSONObjects[i]["title"]}
+        <div class="subtitle">${arrayOfJSONObjects[i]["date"]} - ${arrayOfJSONObjects[i]["url"]}</div>
+        </div>
+        <div id=${cleanTitle} class="display-box">${arrayOfJSONObjects[i]["content"]}</div>
+      </li>`;
+    }
   }
   console.log("list being added", arrayOfJSONObjects);
+  arrayOfAllFeeds = arrayOfJSONObjects;
   div.insertAdjacentHTML(
     "afterbegin",
     `<div id="feed-preview">
-    <div class="horizontal-section">
-            <div class="flex-row"><h2>Result </h2><button onClick="addToFeed()">Add to Feed</button></div>
-
-            <h3>Example feed preview</h3>
+      <div class="horizontal-section">
+        <div class="flex-row">
+          <h2>Result </h2>
+          <button onClick="addToFeed()">Add to Feed</button>
         </div>
-        <div class="horizontal-section">
-            <ol>
-                ${newstring}
-            </ol>
+        <div class="flex-row">
+          <h3>Example feed preview</h3>
+          <button onClick="edit()">Edit</button>
         </div>
-        </div>`,
+      </div>
+      <div id="final-feeds" class="horizontal-section">
+          <ol>
+              ${newstring}
+          </ol>
+      </div>
+    </div>`,
   );
-}
-function convertHTMLCollectionObjectToJSON(htmlCollectionObject) {
-  arrayOfJSONObjects = [];
-  for (let i = 0; i < Math.min(htmlCollectionObject.length, 3); i++) {
-    arrayOfJSONObjects.push({
-      title: htmlCollectionObject[i].getElementsByTagName("title")[0].innerHTML,
-      url: htmlCollectionObject[i].getElementsByTagName("link")[0].innerHTML,
-      content:
-        htmlCollectionObject[i].getElementsByTagName("description")[0]
-          .innerHTML,
-      date: htmlCollectionObject[i].getElementsByTagName("pubDate")[0]
-        .innerHTML,
-      author: "",
-    });
-  }
-  return arrayOfJSONObjects;
 }
 
 function addToFeed() {
   fetch("http://localhost:8000/add_feed", {
-    // Adding method type
     method: "POST",
-
-    // Adding body or contents to send
     body: JSON.stringify({
       name: "foo",
       url: "bar",
       data: arrayOfAllFeeds,
     }),
-
-    // Adding headers to the request
     headers: {
       "Content-type": "application/json; charset=UTF-8",
     },
   })
-    // Converting to JSON
     .then((response) => response.json())
-
-    // Displaying results to console
     .then((json) => console.log(json));
   return arrayOfAllFeeds;
 }
@@ -141,4 +126,61 @@ function showFeedContent(cleanTitle) {
     all_feeds[i].style.display = "none";
   }
   cleanTitle.style.display = "block";
+}
+
+function startLoader() {
+  document.getElementById("loader").style.display = "block";
+}
+function closeLoader() {
+  document.getElementById("loader").style.display = "none";
+}
+
+function edit() {
+  const feedPreviewDiv = document.getElementById("final-feeds");
+  feedPreviewDiv.style.display = "none";
+  displayEditFeedPanel();
+  console.log(arrayOfAllFeeds, "arrayOfAllFeeds");
+  const iframeRoot =
+    document.getElementById("website-preview").contentWindow.document;
+  console.log("iframeRoot", iframeRoot);
+
+  var css = `
+    *:hover:not(:has(*:hover)){ background-color: #00ff00}
+    `;
+  var style = document.createElement("style");
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+
+  iframeRoot.getElementsByTagName("head")[0].appendChild(style);
+  iframeRoot.querySelectorAll("body *").forEach((element) => {
+    element.addEventListener("click", (event) => {
+      const imageId = event.currentTarget.innerHTML;
+      if (event.currentTarget == event.target) {
+        console.log(imageId);
+      }
+    });
+  });
+}
+
+function displayEditFeedPanel() {
+  const div = document.getElementById("right-section");
+
+  div.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div id="feed-edit" class="edit-section">
+      <div class="horizontal-section-edit">
+        <div class="flex-row">Title:<div class="single-row-edit">${arrayOfAllFeeds[0].title}</div></div>
+        <div class="flex-row">Date:<div class="single-row-edit">${arrayOfAllFeeds[0].date}</div></div>
+        <div class="flex-row">Link:<div class="single-row-edit">${arrayOfAllFeeds[0].url}</div></div>
+        <div class="flex-row">Author:<div class="single-row-edit">${arrayOfAllFeeds[0].author}</div></div>
+        <div class="flex-row">Content:<div class="display-box-edit">${arrayOfAllFeeds[0].content}</div></div>
+
+      </div>
+    </div>`,
+  );
 }
