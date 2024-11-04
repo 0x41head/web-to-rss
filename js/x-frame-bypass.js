@@ -76,10 +76,7 @@ customElements.define(
         .catch((e) => console.error("Cannot load X-Frame-Bypass:", e));
     }
     fetchProxy(url, options, i) {
-      const proxy = [
-        "https://api.codetabs.com/v1/proxy/?quest=",
-        "https://corsproxy.io?",
-      ];
+      const proxy = ["https://corsproxy.io?"];
       return fetch(proxy[i] + url, options)
         .then((res) => {
           if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
