@@ -91,6 +91,8 @@ async def detectFeeds(url:str):
             feedArr.append(feedData)
 
         response['data']=feedArr
+    else:
+        response['data']=[{'title':'thisIsASampleTitle','url':'url','content':"<div> content </div>",'date':'date','author':'author'}]
 
     # doc = minidom.parse("sample.xml")
     return response

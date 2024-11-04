@@ -1,5 +1,6 @@
 var arrayOfAllFeeds;
 var isInEditMode = false;
+var editID = null;
 
 function websiteToRSS() {
   startLoader();
@@ -38,9 +39,9 @@ function checkIfRSSForWebsiteExists(url) {
 }
 
 function addiFrame(url) {
-  if (document.getElementById("website-preview")) {
-    document.getElementById("website-preview").remove();
-  }
+  document.getElementById("website-preview")
+    ? document.getElementById("website-preview").remove()
+    : null;
   const div = document.getElementById("left-section");
 
   // // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
@@ -53,8 +54,13 @@ function addiFrame(url) {
       src=${url}
       width="100%"
       title="Website Preview"
+      onload='setFrameLoaded();'
   />`,
   );
+}
+
+function setFrameLoaded() {
+  startEditMode();
 }
 
 function displayFeedToPreview(arrayOfJSONObjects) {
@@ -62,7 +68,7 @@ function displayFeedToPreview(arrayOfJSONObjects) {
   var newstring = "";
 
   if (arrayOfJSONObjects) {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < Math.min(3, arrayOfJSONObjects.length); i++) {
       const cleanTitle = cleanString(arrayOfJSONObjects[i]["title"]);
       newstring += `
       <li>
@@ -86,7 +92,7 @@ function displayFeedToPreview(arrayOfJSONObjects) {
         </div>
         <div class="flex-row">
           <h3>Example feed preview</h3>
-          <button onClick="edit()">Edit</button>
+          <button onClick="startEditMode()">Edit</button>
         </div>
       </div>
       <div id="final-feeds" class="horizontal-section">
@@ -121,7 +127,6 @@ function cleanString(dirtyString) {
 
 function showFeedContent(cleanTitle) {
   const all_feeds = document.getElementsByClassName("display-box");
-  // console.log("all_feeds", all_feeds);
   for (var i = 0; i < all_feeds.length; i++) {
     all_feeds[i].style.display = "none";
   }
@@ -135,18 +140,21 @@ function closeLoader() {
   document.getElementById("loader").style.display = "none";
 }
 
-function edit() {
+function startEditMode() {
+  isInEditMode = true;
   const feedPreviewDiv = document.getElementById("final-feeds");
   feedPreviewDiv.style.display = "none";
   displayEditFeedPanel();
   console.log(arrayOfAllFeeds, "arrayOfAllFeeds");
+  setIframeForInspection();
+}
+
+function setIframeForInspection() {
   const iframeRoot =
     document.getElementById("website-preview").contentWindow.document;
   console.log("iframeRoot", iframeRoot);
 
-  var css = `
-    *:hover:not(:has(*:hover)){ background-color: #00ff00}
-    `;
+  var css = `*:hover:not(:has(*:hover)){ background-color: #00ff00}`;
   var style = document.createElement("style");
 
   if (style.styleSheet) {
@@ -160,27 +168,47 @@ function edit() {
     element.addEventListener("click", (event) => {
       const imageId = event.currentTarget.innerHTML;
       if (event.currentTarget == event.target) {
-        console.log(imageId);
+        replaceText(editID, imageId);
       }
     });
   });
 }
 
 function displayEditFeedPanel() {
-  const div = document.getElementById("right-section");
+  if (!document.getElementById("feed-edit")) {
+    const div = document.getElementById("right-section");
 
-  div.insertAdjacentHTML(
-    "beforeend",
-    `
-    <div id="feed-edit" class="edit-section">
-      <div class="horizontal-section-edit">
-        <div class="flex-row">Title:<div class="single-row-edit">${arrayOfAllFeeds[0].title}</div></div>
-        <div class="flex-row">Date:<div class="single-row-edit">${arrayOfAllFeeds[0].date}</div></div>
-        <div class="flex-row">Link:<div class="single-row-edit">${arrayOfAllFeeds[0].url}</div></div>
-        <div class="flex-row">Author:<div class="single-row-edit">${arrayOfAllFeeds[0].author}</div></div>
-        <div class="flex-row">Content:<div class="display-box-edit">${arrayOfAllFeeds[0].content}</div></div>
-
-      </div>
-    </div>`,
-  );
+    div.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div id="feed-edit" class="edit-section">
+        <div class="horizontal-section-edit">
+          <div class="flex-row">Title:<input id="editable-title" value="${arrayOfAllFeeds[0].title}" class="single-row-edit" onclick="setEditID('editable-title')"/></div>
+          <div class="flex-row">Date:<input id="editable-date" value="${arrayOfAllFeeds[0].date}" class="single-row-edit" onclick="setEditID('editable-date')"/></div>
+          <div class="flex-row">Link:<input id="editable-link" value="${arrayOfAllFeeds[0].url}" class="single-row-edit" onclick="setEditID('editable-link')"/></div>
+          <div class="flex-row">Author:<input id="editable-author" value="${arrayOfAllFeeds[0].author}" class="single-row-edit" onclick="setEditID('editable-author')"/></div>
+          <div class="flex-row">Content:<div id="editable-content" class="display-box-edit" onclick="setEditID('editable-content')">${arrayOfAllFeeds[0].content}</div></div>
+        </div>
+      </div>`,
+    );
+  }
+}
+function setEditID(id) {
+  editID = id;
+  console.log(editID, "editID");
+}
+function replaceText(id, replacementText) {
+  if (id) {
+    const div = document.getElementById(id);
+    if (id == "editable-content") {
+      div.innerHTML = replacementText;
+      document
+        .getElementById("editable-link")
+        .setAttribute(
+          "value",
+          document.getElementById("website-preview").contentDocument.baseURI,
+        );
+      console.log(document.getElementById("website-preview"), "lolo");
+    } else div.setAttribute("value", replacementText);
+  }
 }
