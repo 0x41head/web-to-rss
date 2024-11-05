@@ -6,49 +6,88 @@ function getAllFeeds() {
       addFeedTitles(arrayOfFeedObjects);
     });
 }
+function selectFeeds(feedClass) {
+  console.log(feedClass);
 
+  if (feedClass === "all_feeds") {
+    console.log(feedClass);
+    Array.from(document.querySelectorAll(`h4.feed-item`)).forEach(
+      (element) => (element.style.display = "block"),
+    );
+    return;
+  }
+  Array.from(
+    document.querySelectorAll(`h4.feed-item:not(.${feedClass})`),
+  ).forEach((element) => (element.style.display = "none"));
+  Array.from(document.querySelectorAll(`h4.feed-item.${feedClass}`)).forEach(
+    (element) => (element.style.display = "block"),
+  );
+}
 function addFeedTitles(arrayOfFeedObjects) {
   const left_div = document.getElementById("feed-author");
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
-
+  allFeeds = [];
+  left_div.insertAdjacentHTML(
+    "beforeend",
+    `<div
+      class="feed-item"
+      width="100%"
+      onclick=selectFeeds("all_feeds")>
+      All feeds
+      </div>`,
+  );
   arrayOfFeedObjects.map((feed_author) => {
     left_div.insertAdjacentHTML(
       "beforeend",
       `<div
-        id="website-preview"
         class="feed-item"
-        width="100%">
-        ${feed_author.name}
+        width="100%"
+        onclick=selectFeeds("${cleanString(feed_author.title)}")>
+        ${feed_author.title}
         </div>`,
     );
-    const allFeeds = feed_author.data;
-    const mid_div = document.getElementById("feed-titles");
-    console.log(mid_div);
-    mid_div.focus();
-    allFeeds.map((feed) => {
-      createFeedContent(feed);
-      const cleanStr = cleanString(feed.title);
-      console.log(cleanStr, "cleanStr");
-      mid_div.insertAdjacentHTML(
-        "beforeend",
-        `<h4
-        class="feed-item"
-        onClick="showFeedContent(${cleanStr})">
-          ${feed.title}
-        </h4>`,
-      );
-    });
+    allFeeds = allFeeds.concat(feed_author.data);
+  });
+
+  // function to sort with timestamp
+  allFeeds.sort(function (a, b) {
+    var timestamp1 = new Date(a.timestamp),
+      timestamp2 = new Date(b.timestamp);
+    // Compare the 2 dates
+    if (timestamp1 < timestamp2) return 1;
+    if (timestamp1 > timestamp2) return -1;
+    return 0;
+  });
+  const mid_div = document.getElementById("feed-titles");
+  console.log(allFeeds, "allFeeds");
+  mid_div.focus();
+  allFeeds.map((feed) => {
+    createFeedContent(feed);
+    const cleanStr = cleanString(feed.title);
+    console.log(cleanStr, "cleanStr");
+    mid_div.insertAdjacentHTML(
+      "beforeend",
+      `<h4
+      class="feed-item ${cleanString(feed.author)}"
+      onClick="showFeedContent(${cleanStr})">
+        ${feed.title}
+      </h4>`,
+    );
   });
 }
 
 function createFeedContent(feed) {
+  console.log("feed", feed);
   const right_div = document.getElementById("feed-content");
   const cleanStr = cleanString(feed.title);
 
   right_div.insertAdjacentHTML(
     "beforeend",
-    `<span id="${cleanStr}" class="xxx" style="display:none">
+    `<span id="${cleanStr}" style="display:none">
+    <h2>${feed.author}</h2>
+    <a href=${feed.url} target="_blank">${feed.url}</a><br/>
+    <i>${feed.date}</i><br/>
     ${feed.content}
     </span>`,
   );
@@ -63,5 +102,5 @@ function showFeedContent(cleanTitle) {
 }
 
 function cleanString(dirtyString) {
-  return dirtyString.replace(/[|&;$%@"#<>()+ ,]/g, "");
+  return dirtyString.replace(/[^a-zA-Z0-9]/g, "");
 }

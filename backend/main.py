@@ -8,8 +8,8 @@ import json
 import xml.etree.ElementTree as ET
 import requests
 from bs4 import BeautifulSoup
-
-
+from datetime import datetime
+from urllib3 import request
 
 # Initialization of DB + API Server
 app = FastAPI()
@@ -38,7 +38,7 @@ class FeedBase(BaseModel):
     author: str
 
 class FeedList(BaseModel):
-    name:str
+    title:str
     url:str
     data: list[FeedBase]
 
@@ -50,8 +50,13 @@ def read_root():
 @app.post("/add_feed")
 async def addFeed(data:FeedList):
     doc_ref=db.collection("feed").document()
-    print(json.loads(data.model_dump_json()))
-    doc_ref.set(json.loads(data.model_dump_json()))
+    feedJSON=json.loads(data.model_dump_json())
+    tempFeedJSONdata=feedJSON['data']
+    for feed in tempFeedJSONdata:
+        feed['timestamp']=int((datetime.strptime(feed['date'], '%a, %d %b %Y')).strftime('%s'))
+
+    feedJSON['data']=tempFeedJSONdata
+    doc_ref.set(feedJSON)
     return data
 
 @app.get("/get_all_feeds")
@@ -61,6 +66,7 @@ async def getAllFeeds():
     for doc in docs:
         feedObject=doc.to_dict()
         arrayOfFeedObjects.append(feedObject)
+
     return arrayOfFeedObjects
 
 @app.post("/detect_feeds")
@@ -68,15 +74,17 @@ async def detectFeeds(url:str):
     response={}
     rss_feed_sites=['/rss.xml','/feed.rss']
     xmlData={'status_code':500}
+    print('here')
     for rss_feed in rss_feed_sites:
-        xmlData = requests.get(url + rss_feed)
-        if xmlData.status_code == 200:
+        xmlData = request("GET",url + rss_feed)
+        if xmlData.status == 200:
             break
+
 
     response['title']='title'
     response['url']='url'
-    if xmlData.status_code == 200:
-        root = ET.fromstring(xmlData.content)
+    if xmlData.status == 200:
+        root = ET.fromstring(xmlData.data)
 
         response['data']={}
         allFeeds=root.find('channel')
@@ -95,8 +103,8 @@ async def detectFeeds(url:str):
             except:
                 feedData['content']=findWebsiteContent(feedData['url'])
                 # feedData['content']=None
-            feedData['date']=feed.find('pubDate').text
-            feedData['author']=""
+            feedData['date']=feed.find('pubDate').text[0:16]
+            feedData['author']=response['title']
             feedArr.append(feedData)
 
         response['data']=feedArr

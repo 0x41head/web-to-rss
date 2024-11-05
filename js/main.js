@@ -2,7 +2,7 @@ var arrayOfAllFeeds;
 var isInEditMode = false;
 var editID = null;
 var title = "";
-var url = "";
+var link = "";
 
 function websiteToRSS() {
   startLoader();
@@ -39,7 +39,7 @@ function checkIfRSSForWebsiteExists(url) {
     .then((response) => response.json())
     .then((feedDataJSON) => {
       title = feedDataJSON["title"];
-      url = feedDataJSON["url"];
+      link = feedDataJSON["url"];
       displayFeedToPreview(feedDataJSON["data"]);
       closeLoader();
     });
@@ -116,7 +116,7 @@ function addToFeed() {
     method: "POST",
     body: JSON.stringify({
       title: title,
-      url: url,
+      url: link,
       data: arrayOfAllFeeds,
     }),
     headers: {
@@ -129,7 +129,7 @@ function addToFeed() {
 }
 
 function cleanString(dirtyString) {
-  return dirtyString.replace(/[|&;$%@"#<>`''()+ ,]/g, "");
+  return dirtyString.replace(/[^a-zA-Z0-9]/g, "");
 }
 
 function showFeedContent(cleanTitle) {
