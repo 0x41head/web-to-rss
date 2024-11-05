@@ -1,6 +1,8 @@
 var arrayOfAllFeeds;
 var isInEditMode = false;
 var editID = null;
+var title = "";
+var url = "";
 
 function websiteToRSS() {
   startLoader();
@@ -21,6 +23,9 @@ function checkIfRSSForWebsiteExists(url) {
   if (document.getElementById("feed-preview")) {
     document.getElementById("feed-preview").remove();
   }
+  if (document.getElementById("feed-edit")) {
+    document.getElementById("feed-edit").remove();
+  }
   fetch(
     "http://localhost:8000/detect_feeds?" +
       new URLSearchParams({ url: url }).toString(),
@@ -33,6 +38,8 @@ function checkIfRSSForWebsiteExists(url) {
   )
     .then((response) => response.json())
     .then((feedDataJSON) => {
+      title = feedDataJSON["title"];
+      url = feedDataJSON["url"];
       displayFeedToPreview(feedDataJSON["data"]);
       closeLoader();
     });
@@ -60,7 +67,7 @@ function addiFrame(url) {
 }
 
 function setFrameLoaded() {
-  startEditMode();
+  if (isInEditMode) startEditMode();
 }
 
 function displayFeedToPreview(arrayOfJSONObjects) {
@@ -108,8 +115,8 @@ function addToFeed() {
   fetch("http://localhost:8000/add_feed", {
     method: "POST",
     body: JSON.stringify({
-      name: "foo",
-      url: "bar",
+      title: title,
+      url: url,
       data: arrayOfAllFeeds,
     }),
     headers: {
@@ -122,7 +129,7 @@ function addToFeed() {
 }
 
 function cleanString(dirtyString) {
-  return dirtyString.replace(/[|&;$%@"#<>()+ ,]/g, "");
+  return dirtyString.replace(/[|&;$%@"#<>`''()+ ,]/g, "");
 }
 
 function showFeedContent(cleanTitle) {

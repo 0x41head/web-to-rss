@@ -77,8 +77,6 @@ customElements.define(
     }
     fetchProxy(url, options, i) {
       const proxy = [
-        "https://corsproxy.io?",
-        "https://api.allorigins.win/raw?url=",
         "https://script.google.com/macros/s/AKfycbxQe09M50_NutxTaBCNOXumCTgKA9R1224X-TvjNHc-NNy9XrebVBUOKTDOnaPS1FWU/exec?content=",
         "https://api.codetabs.com/v1/proxy/?quest=",
       ];
