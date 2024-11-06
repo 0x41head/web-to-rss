@@ -1,6 +1,6 @@
 getAllFeeds();
 function getAllFeeds() {
-  fetch("https://api.0x41head.com:8000/get_all_feeds")
+  fetch("https://api.0x41head.com/get_all_feeds")
     .then((response) => response.json())
     .then((arrayOfFeedObjects) => {
       startLoader();
