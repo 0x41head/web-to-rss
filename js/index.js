@@ -1,9 +1,11 @@
 getAllFeeds();
 function getAllFeeds() {
-  fetch("http://localhost:8000/get_all_feeds")
+  fetch("http://64.23.249.30:8000/get_all_feeds")
     .then((response) => response.json())
     .then((arrayOfFeedObjects) => {
+      startLoader();
       addFeedTitles(arrayOfFeedObjects);
+      closeLoader();
     });
 }
 function selectFeeds(feedClass) {
@@ -11,15 +13,15 @@ function selectFeeds(feedClass) {
 
   if (feedClass === "all_feeds") {
     console.log(feedClass);
-    Array.from(document.querySelectorAll(`h4.feed-item`)).forEach(
+    Array.from(document.querySelectorAll(`div.feed-item`)).forEach(
       (element) => (element.style.display = "block"),
     );
     return;
   }
   Array.from(
-    document.querySelectorAll(`h4.feed-item:not(.${feedClass})`),
+    document.querySelectorAll(`div.feed-item:not(.${feedClass})`),
   ).forEach((element) => (element.style.display = "none"));
-  Array.from(document.querySelectorAll(`h4.feed-item.${feedClass}`)).forEach(
+  Array.from(document.querySelectorAll(`div.feed-item.${feedClass}`)).forEach(
     (element) => (element.style.display = "block"),
   );
 }
@@ -31,7 +33,7 @@ function addFeedTitles(arrayOfFeedObjects) {
   left_div.insertAdjacentHTML(
     "beforeend",
     `<div
-      class="feed-item"
+      class="feed-title"
       width="100%"
       onclick=selectFeeds("all_feeds")>
       All feeds
@@ -41,7 +43,7 @@ function addFeedTitles(arrayOfFeedObjects) {
     left_div.insertAdjacentHTML(
       "beforeend",
       `<div
-        class="feed-item"
+        class="feed-title"
         width="100%"
         onclick=selectFeeds("${cleanString(feed_author.title)}")>
         ${feed_author.title}
@@ -68,11 +70,11 @@ function addFeedTitles(arrayOfFeedObjects) {
     console.log(cleanStr, "cleanStr");
     mid_div.insertAdjacentHTML(
       "beforeend",
-      `<h4
-      class="feed-item ${cleanString(feed.author)}"
+      `<div
+      class="feed-item ${cleanString(feed.feedName)}"
       onClick="showFeedContent(${cleanStr})">
-        ${feed.title}
-      </h4>`,
+        <h4>${feed.title}</h4>
+      </div>`,
     );
   });
 }
@@ -103,4 +105,11 @@ function showFeedContent(cleanTitle) {
 
 function cleanString(dirtyString) {
   return dirtyString.replace(/[^a-zA-Z0-9]/g, "");
+}
+
+function startLoader() {
+  document.getElementById("loader").style.display = "block";
+}
+function closeLoader() {
+  document.getElementById("loader").style.display = "none";
 }

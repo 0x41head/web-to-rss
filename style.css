@@ -47,7 +47,6 @@ h2 {
 }
 
 .section {
-    padding-: 20px;
     padding-top: 0px;
     box-sizing: border-box;
     border: 1px solid #ccc;
@@ -135,6 +134,23 @@ h2 {
     background-color: #d98324;
     color: #faf9f6;
 }
+
+.feed-title {
+    background-color: #faf9f6;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    margin-bottom: 3px;
+}
+
+.feed-title:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #d98324;
+    color: #faf9f6;
+}
 .display-box {
     height: 200px;
     overflow: auto;
@@ -149,6 +165,7 @@ h2 {
     border-top: 16px solid #d98324;
     width: 50px;
     height: 50px;
+    margin: auto;
     -webkit-animation: spin 2s linear infinite; /* Safari */
     animation: spin 2s linear infinite;
 }
@@ -205,4 +222,19 @@ h2 {
 }
 .edit-section {
     height: 100%;
+}
+.center-div-2 {
+    height: 100%;
+    align-content: center;
+    margin: auto;
+}
+.small-loader {
+    border: 16px solid #cbc1ae;
+    border-radius: 50%;
+    border-top: 16px solid #d98324;
+    width: 20px;
+    height: 20px;
+    margin: auto;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
 }

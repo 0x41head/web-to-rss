@@ -3,6 +3,12 @@ var isInEditMode = false;
 var editID = null;
 var title = "";
 var link = "";
+var manualSelection = {
+  title: {},
+  date: {},
+  author: {},
+  content: {},
+};
 
 function websiteToRSS() {
   startLoader();
@@ -27,7 +33,7 @@ function checkIfRSSForWebsiteExists(url) {
     document.getElementById("feed-edit").remove();
   }
   fetch(
-    "http://localhost:8000/detect_feeds?" +
+    "http://64.23.249.30:8000/detect_feeds?" +
       new URLSearchParams({ url: url }).toString(),
     {
       method: "POST",
@@ -95,7 +101,10 @@ function displayFeedToPreview(arrayOfJSONObjects) {
       <div class="horizontal-section">
         <div class="flex-row">
           <h2>Result </h2>
-          <button onClick="addToFeed()">Add to Feed</button>
+          <div id="small-loader" style="display:none">
+              <div class="small-loader"></div>
+          </div>
+          <button id="add-to-feed" onClick="addToFeed()">Add to Feed</button>
         </div>
         <div class="flex-row">
           <h3>Example feed preview</h3>
@@ -112,19 +121,30 @@ function displayFeedToPreview(arrayOfJSONObjects) {
 }
 
 function addToFeed() {
-  fetch("http://localhost:8000/add_feed", {
+  const smallLoaderDiv = document.getElementById("small-loader");
+  const addToFeedDiv = document.getElementById("add-to-feed");
+
+  smallLoaderDiv.style.display = "block";
+  addToFeedDiv.style.display = "none";
+  fetch("http://64.23.249.30:8000/add_feed", {
     method: "POST",
     body: JSON.stringify({
+      isEdited: isInEditMode,
       title: title,
       url: link,
-      data: arrayOfAllFeeds,
+      data: isInEditMode ? manualSelection : arrayOfAllFeeds,
     }),
     headers: {
       "Content-type": "application/json; charset=UTF-8",
     },
   })
     .then((response) => response.json())
-    .then((json) => console.log(json));
+    .then((json) => {
+      console.log(json);
+      smallLoaderDiv.style.display = "none";
+      addToFeedDiv.style.display = "block";
+      alert("Feed Added!");
+    });
   return arrayOfAllFeeds;
 }
 
@@ -161,7 +181,7 @@ function setIframeForInspection() {
     document.getElementById("website-preview").contentWindow.document;
   console.log("iframeRoot", iframeRoot);
 
-  var css = `*:hover:not(:has(*:hover)){ background-color: #00ff00}`;
+  var css = `*:hover:not(:has(*:hover)){ background-color: #9ACD32}`;
   var style = document.createElement("style");
 
   if (style.styleSheet) {
@@ -173,9 +193,16 @@ function setIframeForInspection() {
   iframeRoot.getElementsByTagName("head")[0].appendChild(style);
   iframeRoot.querySelectorAll("body *").forEach((element) => {
     element.addEventListener("click", (event) => {
-      const imageId = event.currentTarget.innerHTML;
+      const tagID = event.currentTarget.innerHTML;
+      console.log(event.currentTarget, "event.currentTarget");
+      setClassListInManualSelection(
+        editID,
+        event.currentTarget.classList,
+        event.currentTarget.localName,
+      );
       if (event.currentTarget == event.target) {
-        replaceText(editID, imageId);
+        replaceText(editID, tagID);
+        console.log("classListForElementKey", manualSelection);
       }
     });
   });
@@ -190,11 +217,11 @@ function displayEditFeedPanel() {
       `
       <div id="feed-edit" class="edit-section">
         <div class="horizontal-section-edit">
-          <div class="flex-row">Title:<input id="editable-title" value="${arrayOfAllFeeds[0].title}" class="single-row-edit" onclick="setEditID('editable-title')"/></div>
-          <div class="flex-row">Date:<input id="editable-date" value="${arrayOfAllFeeds[0].date}" class="single-row-edit" onclick="setEditID('editable-date')"/></div>
-          <div class="flex-row">Link:<input id="editable-link" value="${arrayOfAllFeeds[0].url}" class="single-row-edit" onclick="setEditID('editable-link')"/></div>
-          <div class="flex-row">Author:<input id="editable-author" value="${arrayOfAllFeeds[0].author}" class="single-row-edit" onclick="setEditID('editable-author')"/></div>
-          <div class="flex-row">Content:<div id="editable-content" class="display-box-edit" onclick="setEditID('editable-content')">${arrayOfAllFeeds[0].content}</div></div>
+          <div class="flex-row">Title:<input id="title" value="${arrayOfAllFeeds[0].title}" class="single-row-edit" onclick="setEditID('title')"/></div>
+          <div class="flex-row">Date:<input id="date" value="${arrayOfAllFeeds[0].date}" class="single-row-edit" onclick="setEditID('date')"/></div>
+          <div class="flex-row">Link:<input id="link" value="${arrayOfAllFeeds[0].url}" class="single-row-edit" onclick="setEditID('link')"/></div>
+          <div class="flex-row">Author:<input id="author" value="${arrayOfAllFeeds[0].author}" class="single-row-edit" onclick="setEditID('author')"/></div>
+          <div class="flex-row">Content:<div id="content" class="display-box-edit" onclick="setEditID('content')">${arrayOfAllFeeds[0].content}</div></div>
         </div>
       </div>`,
     );
@@ -202,15 +229,16 @@ function displayEditFeedPanel() {
 }
 function setEditID(id) {
   editID = id;
+  manualSelection[id] = {};
   console.log(editID, "editID");
 }
 function replaceText(id, replacementText) {
   if (id) {
     const div = document.getElementById(id);
-    if (id == "editable-content") {
+    if (id == "content") {
       div.innerHTML = replacementText;
       document
-        .getElementById("editable-link")
+        .getElementById("link")
         .setAttribute(
           "value",
           document.getElementById("website-preview").contentDocument.baseURI,
@@ -218,4 +246,13 @@ function replaceText(id, replacementText) {
       console.log(document.getElementById("website-preview"), "lolo");
     } else div.setAttribute("value", replacementText);
   }
+}
+
+function setClassListInManualSelection(id, classList, elementName) {
+  if (classList.length == 0 || manualSelection[id]?.classList?.length) return;
+
+  manualSelection[id]["classList"] = Array.from(classList);
+  manualSelection[id]["element"] = elementName;
+  manualSelection[id]["url"] =
+    document.getElementById("website-preview").contentDocument.baseURI;
 }
