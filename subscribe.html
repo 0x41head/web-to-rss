@@ -11,12 +11,18 @@
             type="module"
         ></script>
         <link rel="stylesheet" href="style.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        />
         <title>RSS Demo</title>
     </head>
     <body>
         <div class="topbar">
             <h1>RSS Demo</h1>
-            <button><a href="./index.html">Home</a></button>
+            <button>
+                <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+            </button>
         </div>
         <div class="container">
             <div id="left-section" class="vertical-section">
@@ -27,7 +33,9 @@
                         class="input-field"
                         placeholder="Enter your input here"
                     />
-                    <button onclick="websiteToRSS()">Submit</button>
+                    <button onclick="websiteToRSS()">
+                        <i class="fa fa-search"></i> Search
+                    </button>
                 </div>
                 <!-- <div
                     id="website-preview"

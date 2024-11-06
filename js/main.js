@@ -104,11 +104,11 @@ function displayFeedToPreview(arrayOfJSONObjects) {
           <div id="small-loader" style="display:none">
               <div class="small-loader"></div>
           </div>
-          <button id="add-to-feed" onClick="addToFeed()">Add to Feed</button>
+          <button id="add-to-feed" onClick="addToFeed()"><i class="fa fa-plus"></i> Add to Feed</button>
         </div>
         <div class="flex-row">
           <h3>Example feed preview</h3>
-          <button onClick="startEditMode()">Edit</button>
+          <button onClick="startEditMode()"><i class="fa fa-edit"></i> Edit</button>
         </div>
       </div>
       <div id="final-feeds" class="horizontal-section">
