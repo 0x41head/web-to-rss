@@ -33,7 +33,7 @@ function checkIfRSSForWebsiteExists(url) {
     document.getElementById("feed-edit").remove();
   }
   fetch(
-    "http://64.23.249.30:8000/detect_feeds?" +
+    "https://api.0x41head.com/detect_feeds?" +
       new URLSearchParams({ url: url }).toString(),
     {
       method: "POST",
@@ -126,7 +126,7 @@ function addToFeed() {
 
   smallLoaderDiv.style.display = "block";
   addToFeedDiv.style.display = "none";
-  fetch("http://64.23.249.30:8000/add_feed", {
+  fetch("https://api.0x41head.com/add_feed", {
     method: "POST",
     body: JSON.stringify({
       isEdited: isInEditMode,
