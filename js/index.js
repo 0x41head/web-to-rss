@@ -25,6 +25,22 @@ function selectFeeds(feedClass) {
     (element) => (element.style.display = "block"),
   );
 }
+function deleteFeed(title) {
+  console.log("delete");
+  fetch("https://api.0x41head.com/delete_feed", {
+    method: "POST",
+    body: JSON.stringify({
+      title: title,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => console.log(response.json()))
+    .then((arrayOfFeedObjects) => {
+      location.reload();
+    });
+}
 function addFeedTitles(arrayOfFeedObjects) {
   const left_div = document.getElementById("feed-author");
 
@@ -33,7 +49,7 @@ function addFeedTitles(arrayOfFeedObjects) {
   left_div.insertAdjacentHTML(
     "beforeend",
     `<div
-      class="feed-title"
+      class="feed-title all-feeds"
       width="100%"
       onclick=selectFeeds("all_feeds")>
       All feeds
@@ -44,9 +60,8 @@ function addFeedTitles(arrayOfFeedObjects) {
       "beforeend",
       `<div
         class="feed-title"
-        width="100%"
-        onclick=selectFeeds("${cleanString(feed_author.title)}")>
-        ${feed_author.title}
+        >
+        <div class="feed-title-text" onclick=selectFeeds("${cleanString(feed_author.title)}")>${feed_author.title}</div><button class="delete-button" onClick="${deleteFeed(feed_author.title)}"> <i class="fa fa-trash"></i></button>
         </div>`,
     );
     allFeeds = allFeeds.concat(feed_author.data);

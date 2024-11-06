@@ -25,6 +25,18 @@ button a {
     color: #faf9f6;
     text-decoration: none;
 }
+button:hover {
+    background-color: #faf9f6;
+    color: #d98324;
+}
+button a:hover {
+    background-color: #faf9f6;
+    color: #d98324;
+}
+.delete-button {
+    margin: 0px;
+    padding: 10px 12px;
+}
 h2 {
     width: 80%;
 }
@@ -139,19 +151,30 @@ h2 {
 .feed-title {
     background-color: #faf9f6;
     border-radius: 8px;
-    padding: 20px;
+    padding: 0px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
     border: 1px solid #ccc;
     margin-bottom: 3px;
+    flex: 1;
+    display: flex;
 }
-
-.feed-title:hover {
+.all-feeds {
+    padding: 20px;
+}
+.feed-title-text {
+    margin: auto;
+    width: 80%;
+    padding: 10px;
+}
+.all-feeds:hover,
+.feed-title-text:hover {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     background-color: #d98324;
     color: #faf9f6;
 }
+
 .display-box {
     height: 200px;
     overflow: auto;

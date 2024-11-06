@@ -58,10 +58,27 @@ class FeedList(BaseModel):
     url:str
     data: list[FeedBase] | SelectedFeedBase
 
+class Title(BaseModel):
+    title:str
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
+@app.post("/delete_feed")
+async def deleteFeed(title:Title):
+    docs=(db.collection("feed").stream())
+    title=json.loads(title.model_dump_json())['title']
+    print(title)
+    for doc in docs:
+        feedObject=doc.to_dict()
+        if(feedObject['title']==title):
+            try:
+                doc_ref=db.collection("feed").document(doc.id)
+                doc_ref.delete()
+            except:
+                print("couldn't del")
+
+    return True
 
 @app.post("/add_feed")
 async def addFeed(data:FeedList):
