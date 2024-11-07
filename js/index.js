@@ -61,7 +61,8 @@ function addFeedTitles(arrayOfFeedObjects) {
       `<div
         class="feed-title"
         >
-        <div class="feed-title-text" onclick=selectFeeds("${cleanString(feed_author.title)}")>${feed_author.title}</div><button class="delete-button" onClick="${deleteFeed(feed_author.title)}"> <i class="fa fa-trash"></i></button>
+        <div class="feed-title-text" onclick=selectFeeds("${cleanString(feed_author.title)}")>${feed_author.title}</div>
+        <button class="delete-button" onClick=deleteFeed("${feed_author.title}")> <i class="fa fa-trash"></i></button>
         </div>`,
     );
     allFeeds = allFeeds.concat(feed_author.data);
