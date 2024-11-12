@@ -1,30 +1,6 @@
 getAllFeeds();
-function getAllFeeds() {
-  fetch("https://api.0x41head.com/get_all_feeds")
-    .then((response) => response.json())
-    .then((arrayOfFeedObjects) => {
-      startLoader();
-      addFeedTitles(arrayOfFeedObjects);
-      closeLoader();
-    });
-}
-function selectFeeds(feedClass) {
-  console.log(feedClass);
 
-  if (feedClass === "all_feeds") {
-    console.log(feedClass);
-    Array.from(document.querySelectorAll(`div.feed-item`)).forEach(
-      (element) => (element.style.display = "block"),
-    );
-    return;
-  }
-  Array.from(
-    document.querySelectorAll(`div.feed-item:not(.${feedClass})`),
-  ).forEach((element) => (element.style.display = "none"));
-  Array.from(document.querySelectorAll(`div.feed-item.${feedClass}`)).forEach(
-    (element) => (element.style.display = "block"),
-  );
-}
+// Delete feed API call
 function deleteFeed(title) {
   console.log("delete");
   fetch("https://api.0x41head.com/delete_feed", {
@@ -41,6 +17,19 @@ function deleteFeed(title) {
       location.reload();
     });
 }
+
+//get all feeds API call
+function getAllFeeds() {
+  fetch("https://api.0x41head.com/get_all_feeds")
+    .then((response) => response.json())
+    .then((arrayOfFeedObjects) => {
+      startLoader();
+      addFeedTitles(arrayOfFeedObjects);
+      closeLoader();
+    });
+}
+
+// function to generate feed titles and website titles (mid and left div)
 function addFeedTitles(arrayOfFeedObjects) {
   const left_div = document.getElementById("feed-author");
 
@@ -68,7 +57,7 @@ function addFeedTitles(arrayOfFeedObjects) {
     allFeeds = allFeeds.concat(feed_author.data);
   });
 
-  // function to sort with timestamp
+  // function to sort with timestamp in desc order
   allFeeds.sort(function (a, b) {
     var timestamp1 = new Date(a.timestamp),
       timestamp2 = new Date(b.timestamp);
@@ -95,6 +84,7 @@ function addFeedTitles(arrayOfFeedObjects) {
   });
 }
 
+// function to generate and hide all feed content
 function createFeedContent(feed) {
   console.log("feed", feed);
   const right_div = document.getElementById("feed-content");
@@ -110,6 +100,8 @@ function createFeedContent(feed) {
     </span>`,
   );
 }
+
+//Function to hide and display actual feed content
 function showFeedContent(cleanTitle) {
   const all_feeds = document.getElementsByTagName("span");
   // console.log("all_feeds", all_feeds);
@@ -119,6 +111,26 @@ function showFeedContent(cleanTitle) {
   cleanTitle.style.display = "block";
 }
 
+// function to show and hide feed titles
+function selectFeeds(feedClass) {
+  console.log(feedClass);
+
+  if (feedClass === "all_feeds") {
+    console.log(feedClass);
+    Array.from(document.querySelectorAll(`div.feed-item`)).forEach(
+      (element) => (element.style.display = "block"),
+    );
+    return;
+  }
+  Array.from(
+    document.querySelectorAll(`div.feed-item:not(.${feedClass})`),
+  ).forEach((element) => (element.style.display = "none"));
+  Array.from(document.querySelectorAll(`div.feed-item.${feedClass}`)).forEach(
+    (element) => (element.style.display = "block"),
+  );
+}
+
+// utility functions
 function cleanString(dirtyString) {
   return dirtyString.replace(/[^a-zA-Z0-9]/g, "");
 }

@@ -10,11 +10,11 @@ var manualSelection = {
   content: {},
 };
 
+// function to display iframe and check if rss exists
 function websiteToRSS() {
   startLoader();
   var url = document.getElementById("website").value;
   try {
-    // Create URL object to parse the URL (throws error if invalid)
     const urlObject = new URL(url);
     console.log(urlObject, "urlObject");
     addiFrame(urlObject.href);
@@ -26,12 +26,14 @@ function websiteToRSS() {
 }
 
 function checkIfRSSForWebsiteExists(url) {
+  // Remove elements if not first call
   if (document.getElementById("feed-preview")) {
     document.getElementById("feed-preview").remove();
   }
   if (document.getElementById("feed-edit")) {
     document.getElementById("feed-edit").remove();
   }
+  // API to get RSS feeds,if it exists, and send it as formate data
   fetch(
     "https://api.0x41head.com/detect_feeds?" +
       new URLSearchParams({ url: url }).toString(),
@@ -57,7 +59,7 @@ function addiFrame(url) {
     : null;
   const div = document.getElementById("left-section");
 
-  // // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML
   div.insertAdjacentHTML(
     "beforeend",
     `<iframe
@@ -72,10 +74,12 @@ function addiFrame(url) {
   );
 }
 
+// check if we are in edit mode and if yes continue editing in iframe even if we change pages inside
 function setFrameLoaded() {
   if (isInEditMode) startEditMode();
 }
 
+// add HTML of feed preview
 function displayFeedToPreview(arrayOfJSONObjects) {
   const div = document.getElementById("right-section");
   var newstring = "";
@@ -120,13 +124,14 @@ function displayFeedToPreview(arrayOfJSONObjects) {
   );
 }
 
+// call API to add to database
 function addToFeed() {
   const smallLoaderDiv = document.getElementById("small-loader");
   const addToFeedDiv = document.getElementById("add-to-feed");
 
   smallLoaderDiv.style.display = "block";
   addToFeedDiv.style.display = "none";
-  fetch("https://api.0x41head.com/add_feed", {
+  fetch("http://localhost:8000/add_feed", {
     method: "POST",
     body: JSON.stringify({
       isEdited: isInEditMode,
@@ -181,6 +186,7 @@ function setIframeForInspection() {
     document.getElementById("website-preview").contentWindow.document;
   console.log("iframeRoot", iframeRoot);
 
+  // Pointers on css: https://stackoverflow.com/questions/2700783/how-to-apply-childhover-but-not-parenthover
   var css = `*:hover:not(:has(*:hover)){ background-color: #9ACD32}`;
   var style = document.createElement("style");
 
